@@ -3,8 +3,21 @@ from .api.routers import example, configuration
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
+from dotenv import load_dotenv
+import os
+
+print('Starting app...')
+print('Loading general environment...')
+load_dotenv()
+print(f'Loading {os.getenv("ENV")} environment')
+load_dotenv(f'envs/.{os.getenv("ENV")}.env')
+
+from .config import config
 
 app = FastAPI()
+
+print(f'Example of config usage: {config.get("api")}')
+print(f'Example of config usage: {config.get("db")}')
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc: RequestValidationError):

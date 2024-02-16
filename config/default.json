@@ -1,0 +1,14 @@
+{
+    "api": {
+        "version": {
+            "major": 1,
+            "minor": 0,
+            "patch": 0
+        },
+        "port": 3001,
+        "timeout": 1000
+    },
+    "db": {
+        "queryAlertTime": 1000
+    }
+}
