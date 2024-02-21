@@ -1,5 +1,9 @@
 {
-    "db": {
-        "location": "./data/db.sq3"
+    "postgresql": {
+        "url": "postgresql://user:password@postgresserver/db",
+        "db_name": "name-pro",
+        "user": "my-user",
+        "pwd": "my-pass",
+        "host": "localhost"
     }
 }

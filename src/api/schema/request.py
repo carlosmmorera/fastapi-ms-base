@@ -1,3 +1,4 @@
+from typing_extensions import Self
 from pydantic import BaseModel, model_validator
 from abc import ABC, abstractmethod
 
@@ -8,7 +9,7 @@ class Request(BaseModel, ABC):
     """
     @model_validator(mode='after')
     @abstractmethod
-    def validate(self) -> 'Request':
+    def validate(self) -> Self:
         """
         Validates the request
         """

@@ -17,7 +17,7 @@ from .config import config
 app = FastAPI()
 
 print(f'Example of config usage: {config.get("api")}')
-print(f'Example of config usage: {config.get("db")}')
+print(f'Example of config usage: {config.get("postgresql")}')
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request, exc: RequestValidationError):

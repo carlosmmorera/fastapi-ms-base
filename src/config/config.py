@@ -1,7 +1,8 @@
-from typing import TypeVar
+from typing import Any, TypeVar
 import json
 from threading import Lock
 import os
+from collections.abc import Callable
 
 EXEC_ENV_VAR = "ENV"
 CONFIG_PATH_VAR = "CONFIG_PATH"
@@ -30,7 +31,7 @@ class ConfigParser(metaclass=Singleton):
             with open(f'{config_path}/{os.getenv(EXEC_ENV_VAR)}.json') as f:
                 self.json_env = json.load(f)
 
-    def get(self, key: str):
+    def get(self, key: str) -> Any:
         if key in self.json_env:
             if key not in self.json_default or not(isinstance(self.json_default[key], dict)):
                 return self.json_env[key]
@@ -41,8 +42,8 @@ config_parser = ConfigParser()
         
 
 T = TypeVar('T')
-def get(field: str, constructor: T = None) -> T | any:
-    value: any = config_parser.get(field)
-    if constructor:
+def get(field: str, constructor: Callable[[], T] | None = None) -> T | Any:
+    value: Any = config_parser.get(field)
+    if constructor and isinstance(value, dict):
         value = constructor(**value)
     return value
