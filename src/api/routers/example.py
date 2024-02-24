@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from ..schema.examplerequest import ExampleRequest
 from ..schema.exampleresponses import (
     HelloWorldResponse, 
@@ -6,9 +6,12 @@ from ..schema.exampleresponses import (
     PostExampleResponse, 
     PostExampleWithParamsResponse
     )
+from ..mdw.authcheck import AuthCheck
+from ..mdw.authchecktypes.basicauthcheck import BasicAuthCheck
+from typing import Annotated
 
-router = APIRouter()
-
+router: APIRouter = APIRouter()
+authchecker: AuthCheck = AuthCheck(BasicAuthCheck())
 
 @router.get("/")
 async def hello_world() -> HelloWorldResponse:
@@ -28,8 +31,10 @@ async def read_user(username: str) -> ReadUserResponse:
 
 
 @router.post("/post")
-async def post_example(request: ExampleRequest) -> PostExampleResponse:
-    return {'input': request.input, 'optinput': request.optinput, 'optinput2': request.optinput2}
+async def post_example(request: ExampleRequest, 
+                       username: Annotated[str, Depends(authchecker.check_authorization)]) -> PostExampleResponse:
+    return {'input': request.input, 'optinput': request.optinput, 'optinput2': request.optinput2,
+            'username': username}
 
 
 @router.post("/postwithparams/{intpar}")
