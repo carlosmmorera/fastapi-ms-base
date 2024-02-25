@@ -10,6 +10,7 @@ class PostExampleResponse(TypedDict):
     input: str
     optinput: int | None
     optinput2: str | None
+    username: str
 
 class PostExampleWithParamsResponse(TypedDict):
     input: str
