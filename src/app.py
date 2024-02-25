@@ -1,8 +1,6 @@
 import sys
-
 import uvicorn
-from fastapi import FastAPI, status, Request
-
+from fastapi import FastAPI, status
 from api.routers import example, configuration
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
@@ -11,19 +9,26 @@ from dotenv import load_dotenv
 import os
 from loguru import logger
 from config import config
-from starlette.routing import Match
+from config.api import ConfigAPI
+
+if __name__ == "__main__":
+    apiconfig: ConfigAPI = config.get('api', ConfigAPI)
+    uvicorn.run("app:app", host=apiconfig.host, port=apiconfig.port)
 
 app = FastAPI()
 
+logger.info('Starting app...')
+logger.info('Loading general environment...')
 # Loads environment variables from a .env file into the current environment
 load_dotenv()
 # Loads environment variables from a specific .env file based on the value of the "ENV" environment variable For
 # example, if "ENV" environment variable is set to "dev", it will load variables from the file
 # ".dev.env" in the "envs" directory
+logger.info(f'Loading {os.getenv("ENV")} environment...')
 load_dotenv(f'envs/.{os.getenv("ENV")}.env')
 
 logger.remove()
-logger.add(sys.stderr, level=os.environ.get("LOGGING_LEVEL"))
+logger.add(sys.stderr, level=os.getenv("LOGGING_LEVEL", 'DEBUG'))
 
 # Aggregate middleware to application
 # app.add_middleware(LoggingMiddleware)
@@ -36,14 +41,7 @@ logger.error("This is an error message.")
 logger.critical('This is a critical message.')
 # log examples end
 
-logger.info('Starting app...')
-logger.info('Loading general environment...')
-logger.info(f'Loading {os.getenv("ENV")} environment')
-
-
-logger.info(f'Example of config usage: {config.get("api")}')
-logger.info(f'Example of config usage: {config.get("postgresql")}')
-
+logger.info('Application started')
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(exc: RequestValidationError):
@@ -72,6 +70,3 @@ app.include_router(configuration.router, prefix="/config",
 
 app.include_router(example.router, prefix="/example",
                    tags=["example"])
-
-if __name__ == "__main__":
-    uvicorn.run("app:app", host="localhost", port=int(os.getenv("SERVER_PORT")))

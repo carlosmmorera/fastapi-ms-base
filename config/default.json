@@ -5,7 +5,8 @@
             "minor": 0,
             "patch": 0
         },
-        "port": 3001,
+        "port": 8000,
+        "host": "localhost",
         "timeout": 1000,
         "security": {
             "admin": "admin",

@@ -4,8 +4,8 @@ from fastapi import Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from typing import Annotated
 from ...exceptions.httpexception import UnauthorizedException
-from ....config import config
-from ....config.api import ConfigAPI
+from config import config
+from config.api import ConfigAPI
 
 security = HTTPBasic()
 
