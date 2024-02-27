@@ -5,5 +5,8 @@
         "user": "my-user",
         "pwd": "my-pass",
         "host": "localhost"
+    },
+    "api": {
+        "port": 5000
     }
 }

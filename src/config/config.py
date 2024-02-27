@@ -38,12 +38,12 @@ class ConfigParser(metaclass=Singleton):
             return (self.json_default[key] | self.json_env[key])
         return self.json_default[key]
     
-config_parser = ConfigParser()
+__config_parser = ConfigParser()
         
 
 T = TypeVar('T')
 def get(field: str, constructor: Callable[[], T] | None = None) -> T | Any:
-    value: Any = config_parser.get(field)
+    value: Any = __config_parser.get(field)
     if constructor and isinstance(value, dict):
         value = constructor(**value)
     return value

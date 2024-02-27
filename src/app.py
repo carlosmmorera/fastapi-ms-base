@@ -1,5 +1,4 @@
 import sys
-import uvicorn
 from fastapi import FastAPI, status
 from starlette.requests import Request
 
@@ -7,7 +6,6 @@ from api.routers import example, configuration
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
-from dotenv import load_dotenv
 import os
 from loguru import logger
 from api.mdw.logmiddleware import LoggingMiddleware
@@ -15,14 +13,6 @@ from api.mdw.logmiddleware import LoggingMiddleware
 app = FastAPI()
 
 logger.info('Starting app...')
-logger.info('Loading general environment...')
-# Loads environment variables from a .env file into the current environment
-load_dotenv()
-# Loads environment variables from a specific .env file based on the value of the "ENV" environment variable For
-# example, if "ENV" environment variable is set to "dev", it will load variables from the file
-# ".dev.env" in the "envs" directory
-logger.info(f'Loading {os.getenv("ENV")} environment...')
-load_dotenv(f'envs/.{os.getenv("ENV")}.env')
 
 logger.remove()
 logger.add(sys.stderr, level=os.getenv("LOGGING_LEVEL", 'DEBUG'))
