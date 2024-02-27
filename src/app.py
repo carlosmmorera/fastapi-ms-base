@@ -1,6 +1,8 @@
 import sys
 import uvicorn
 from fastapi import FastAPI, status
+from starlette.requests import Request
+
 from api.routers import example, configuration
 from fastapi.exceptions import RequestValidationError
 from fastapi.encoders import jsonable_encoder
@@ -8,12 +10,7 @@ from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 import os
 from loguru import logger
-from config import config
-from config.api import ConfigAPI
-
-if __name__ == "__main__":
-    apiconfig: ConfigAPI = config.get('api', ConfigAPI)
-    uvicorn.run("app:app", host=apiconfig.host, port=apiconfig.port)
+from src.api.mdw.logmiddleware import LoggingMiddleware
 
 app = FastAPI()
 
@@ -31,7 +28,7 @@ logger.remove()
 logger.add(sys.stderr, level=os.getenv("LOGGING_LEVEL", 'DEBUG'))
 
 # Aggregate middleware to application
-# app.add_middleware(LoggingMiddleware)
+app.add_middleware(LoggingMiddleware)
 
 # this log examples should be deleted
 logger.info("This is an info message.")
@@ -43,26 +40,13 @@ logger.critical('This is a critical message.')
 
 logger.info('Application started')
 
+
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(exc: RequestValidationError):
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content=jsonable_encoder({"detail": exc.errors()}),
     )
-
-
-# @app.middleware("http")
-# async def log_middle(request: Request, call_next):
-#     params_log = "Params: " + ",\n".join([f"{name}: {value}" for route in request.app.router.routes
-#                                           for match, scope in [route.matches(request)] if match == Match.FULL
-#                                           for name, value in scope["path_params"].items()])
-#     headers_log = "Headers: " + ", ".join([f"{name}: {value}" for name, value in request.headers.items()])
-#
-#     logger.debug(f"{request.method} {request.url}" + "\n" + params_log + "\n" + headers_log)
-#
-#     response = await call_next(request)
-#     logger.debug(f"{request.method} {request.url} " + str(response.status_code))
-#     return response
 
 
 app.include_router(configuration.router, prefix="/config",
