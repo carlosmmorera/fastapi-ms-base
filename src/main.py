@@ -1,6 +1,6 @@
 import uvicorn
 from config.api import ConfigAPI
-from src.config import config
+from config import config
 
 if __name__ == "__main__":
     apiconfig = config.get('api', ConfigAPI)
